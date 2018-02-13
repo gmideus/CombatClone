@@ -4,18 +4,6 @@
 #include <pic32mx.h>  
 
 
-#define DISPLAY_CHANGE_TO_COMMAND_MODE (PORTFCLR = 0x10)
-#define DISPLAY_CHANGE_TO_DATA_MODE (PORTFSET = 0x10)
-
-#define DISPLAY_ACTIVATE_RESET (PORTGCLR = 0x200)
-#define DISPLAY_DO_NOT_RESET (PORTGSET = 0x200)
-
-#define DISPLAY_ACTIVATE_VDD (PORTFCLR = 0x40)
-#define DISPLAY_ACTIVATE_VBAT (PORTFCLR = 0x20)
-
-#define DISPLAY_TURN_OFF_VDD (PORTFSET = 0x40)
-#define DISPLAY_TURN_OFF_VBAT (PORTFSET = 0x20)
-
 void _on_bootstrap() {
 	
 }
@@ -62,49 +50,20 @@ uint8_t spi_send_recv(uint8_t data) {
 	return SPI2BUF;
 }
 
-void display_init(void) {
-        DISPLAY_CHANGE_TO_COMMAND_MODE;
-	quicksleep(10);
-	DISPLAY_ACTIVATE_VDD;
-	quicksleep(1000000);
-	
-	spi_send_recv(0xAE);
-	DISPLAY_ACTIVATE_RESET;
-	quicksleep(10);
-	DISPLAY_DO_NOT_RESET;
-	quicksleep(10);
-	
-	spi_send_recv(0x8D);
-	spi_send_recv(0x14);
-	
-	spi_send_recv(0xD9);
-	spi_send_recv(0xF1);
-	
-	DISPLAY_ACTIVATE_VBAT;
-	quicksleep(10000000);
-	
-	spi_send_recv(0xA1);
-	spi_send_recv(0xC8);
-	
-	spi_send_recv(0xDA);
-	spi_send_recv(0x20);
-	
-	spi_send_recv(0xAF);
-}
 
 /*Send display data with SPI to the display */
 void display_update(char* display_data) {
 	int i, j, k;
 	int c;
 	for(i = 0; i < 4; i++) {
-		DISPLAY_CHANGE_TO_COMMAND_MODE;
+		PORTFCLR = 0x10;
 		spi_send_recv(0x22);
 		spi_send_recv(i);
 		
 		spi_send_recv(0x0);
 		spi_send_recv(0x10);
 		
-		DISPLAY_CHANGE_TO_DATA_MODE;
+		PORTFSET = 0x10;
 		
 		for(j = 0; j < 128; j++) {
 			spi_send_recv(display_data[i*128 + j]);
@@ -115,8 +74,6 @@ void display_update(char* display_data) {
 boundary_check(int position[2], int size[10]){
 	int boundary[2]  = { 128, 32 };
 	int i;
-	//int p;
-	//for(p = 0; p < 2 
 	for(i = 0; i < 2; i++){
 		if(position[i] <= 0){
 			position[i] = 0;
@@ -177,16 +134,5 @@ void controller_update(char p_buttons[2][8]){
 		}
 	}
 
-/*Creates sprites for both players */
-void model_setup(char model[2][10]){
-	int i;
-	for(i = 0; i < 2; i++){
-		model[i][0] = 4;
-		model[i][1] = 4;
-		model[i][2] = 0x6;
-		model[i][3] = 0xf;
-		model[i][4] = 0xf;
-		model[i][5] = 0x6;
-	}
-	
-}
+
+

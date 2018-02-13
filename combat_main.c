@@ -10,13 +10,9 @@ int main(void) {
 	OSCCONCLR = 0x180000;
 	while(OSCCON & (1 << 21)); 
 	SYSKEY = 0x0; 
-	
 
 	AD1PCFG = 0xFFFF;
 	ODCE = 0x0;
-	TRISECLR = 0xFF;
-	PORTE = 0x0;
-	
 
 	PORTF = 0xFFFF;
 	PORTG = (1 << 9);
@@ -24,56 +20,29 @@ int main(void) {
 	ODCG = 0x0;
 	TRISFCLR = 0x70;
 	TRISGCLR = 0x200;
-	
-
-	TRISDSET = (1 << 8);
-	TRISFSET = (1 << 1);
-	
 
 	SPI2CON = 0;
 	SPI2BRG = 4;
 
 	SPI2STATCLR = 0x40;
-
-        SPI2CONSET = 0x40;
-
+	SPI2CONSET = 0x40;
 	SPI2CONSET = 0x20;
-
 	SPI2CONSET = 0x8000;
 	
-	
-	/*
-	 * GPIO Test setup
-	 */
-	TRISECLR = (0xff);   //Sets J6-2,4,6,8 as output
-
-	unsigned int position = 7;
-	PORTE = (0x1 << position);
-	
-	
-	TRISDSET = 0x6;
-	TRISDCLR = 0x600;
-	
+	/*Variable init*/
 	char* display_data[512];
-
-	
-	display_init();
-	display_update(display_data);
-	
-	portd_clr(0);
-	portd_clr(3);
-	
-	int p_position[2][2] = {{1, 1}, {13, 6}};  // player positions [player][coordinate]
-
-	
-	
-	char p_model[2][10];          //player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
-	
-	model_setup(p_model);
-	
-	int i = 0;
+	int p_position[2][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
+	char p_model[2][10];          				//Pslayer model [player][model data]  model data = sizex, sizey, 8 chars representing the model
 	int wait_time = 5;
 	char p_buttons[2][8];
+	
+	
+	/*Display and game setup*/
+	io_init();
+	display_init();
+	model_setup(p_model);
+	
+	
 	while( 1 )
 	{
 		clear_data(display_data);
@@ -95,17 +64,10 @@ int main(void) {
 			
 			boundary_check(p_position[p], p_model[p]);
 		}
-		
-		
-	
 
 		display_data_update(display_data, p_position, p_model);
-		
-		//PORTE = 0x1 << (p_position[0]%8);
 		delay(wait_time);
-	  
 		display_update(display_data);
-	  //display_image(96, icon);
 	}
 	return 0;
 }
