@@ -3,8 +3,9 @@
 
 void timer_init(){
 	T2CON = 0x70;
-	PR2 = 0x7a12;
+	PR2 = 0x1458;
 	T2CONSET = 0x8000;
+	IFS(0) = 0;
 }
 
 void io_init(void){
