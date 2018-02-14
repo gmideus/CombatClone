@@ -26,7 +26,7 @@ clear_data(char* data){
 	}
 }
 
-display_data_update(char* data, int position[2][2], char model[2][10]){
+display_data_update(char* data, int position[2][2], char model[2][10], int bullets[10][6]){  //, int bullets[10][5]
 	int p, i, j;
 	for(p = 0; p < 2; p++){
 		for(i = 0; i < model[p][0]; i++){
@@ -36,6 +36,12 @@ display_data_update(char* data, int position[2][2], char model[2][10]){
 					data[a*128 + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8);
 				}
 			}
+		}
+	}
+	for(i = 0; i < 10; i++){
+		if(bullets[i][0]){
+			int a = (bullets[i][2])/8;
+			data[a*128 + bullets[i][1]] |= (0x1 << bullets[i][2]%8);
 		}
 	}
 }
@@ -70,27 +76,20 @@ void display_update(char* display_data) {
 	}
 }
 
-boundary_check(int position[2], int size[10]){
+boundary_check(int position[2], char size[10]){
 	int boundary[2]  = { 128, 32 };
 	int i;
 	for(i = 0; i < 2; i++){
 		if(position[i] <= 0){
 			position[i] = 0;
 		}
-		if(position[i] >= boundary[i] - 4){
-			position[i] = (boundary[i] - 4);
+		if(position[i] >= boundary[i] - size[i]){
+			position[i] = (boundary[i] - size[i]);
 		}
 	}
 	
 }
 
-
-void delay(int n){
-	int i = 0;
-	while(i < 10000*n){
-		i++;
-	}
-}
 
 volatile int porte_get(int i){
 	return ((PORTE >> i) & 0x00000001);
@@ -127,11 +126,39 @@ void controller_update(char p_buttons[2][8]){
 			p_buttons[1][i] = portd_get(2);
 			portd_set(10);
 			portd_clr(10);
-			//delay();
-			
 			i++;
 		}
 	}
 
+
+void create_bullet(int bullets[10][6], int x_position, int y_position, int x_speed, int y_speed){
+	int i;
+	for(i = 0; i < 10; i++){
+		if(bullets[i][0] == 0){
+			bullets[i][0] = 1;
+			bullets[i][1] = x_position;
+			bullets[i][2] = y_position;
+			bullets[i][3] = x_speed;
+			bullets[i][4] = y_speed;
+			bullets[i][5] = 0;
+			return;
+		}
+	}
+}
+	
+void bullet_update(int bullets[10][6]){
+	int i;
+	for(i = 0; i < 10; i++){
+		if(bullets[i][0]){
+			bullets[i][1] += bullets[i][3];
+			bullets[i][2] += bullets[i][4];
+			bullets[i][5] += 1;
+			if(bullets[i][5] >= 100){
+				bullets[i][0] = 0;
+			}
+	}
+}
+	
+}
 
 

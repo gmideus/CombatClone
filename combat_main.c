@@ -1,7 +1,9 @@
 
 
 #include <stdint.h> 
-#include <pic32mx.h>  
+#include <pic32mx.h> 
+
+ 
 
 int main(void) {
 	SYSKEY = 0xAA996655;  
@@ -32,9 +34,10 @@ int main(void) {
 	/*Variable init*/
 	char* display_data[512];
 	int p_position[2][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
-	char p_model[2][10];          				//Pslayer model [player][model data]  model data = sizex, sizey, 8 chars representing the model
+	char p_model[2][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
 	char p_buttons[2][8];
 	int timer_count = 0;
+	int bullets[10][6];
 
 	
 	
@@ -43,12 +46,14 @@ int main(void) {
 	timer_init();
 	display_init();
 	model_setup(p_model);
+	bullet_init(bullets);
 	
 	
 	
 	while( 1 )
 	{
 		if(IFS(0)){
+			
 			clear_data(display_data);
 			controller_update(p_buttons);
 			int p;				
@@ -63,10 +68,15 @@ int main(void) {
 					p_position[p][1] += 1;
 				}else if(!p_buttons[p][4]){
 					p_position[p][1] -= 1;
+				}
+				
+				if(!p_buttons[p][0]){
+					create_bullet(bullets, p_position[p][0], p_position[p][1], 1, 1);
 				}					
 				boundary_check(p_position[p], p_model[p]);
 			}
-			display_data_update(display_data, p_position, p_model);
+			bullet_update(bullets);
+			display_data_update(display_data, p_position, p_model, bullets);
 			display_update(display_data);
 			IFS(0) = 0;
 		}
