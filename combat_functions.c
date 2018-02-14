@@ -27,14 +27,14 @@ clear_data(char* data){
 	}
 }
 
-display_data_update(char* data, int position[2][2], char model[2][10], int bullets[NUMBER_OF_BULLETS][6]){  //, int bullets[10][5]
+display_data_update(char* data, int position[NUMBER_OF_PLAYERS][2], char model[NUMBER_OF_PLAYERS][10], int bullets[NUMBER_OF_BULLETS][6]){  
 	int p, i, j;
-	for(p = 0; p < 2; p++){
+	for(p = 0; p < NUMBER_OF_PLAYERS; p++){
 		for(i = 0; i < model[p][0]; i++){
 			for(j = 0; j < model[p][1]; j++){
 				if((model[p][i+2] >> j) & 0x1){
 					int a = (position[p][1]+j)/8;
-					data[a*128 + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8);
+					data[a*WIDTH + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8);
 				}
 			}
 		}
@@ -42,7 +42,7 @@ display_data_update(char* data, int position[2][2], char model[2][10], int bulle
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
 			int a = (bullets[i][2])/8;
-			data[a*128 + bullets[i][1]] |= (0x1 << bullets[i][2]%8);
+			data[a*WIDTH + bullets[i][1]] |= (0x1 << bullets[i][2]%8);
 		}
 	}
 }
@@ -71,14 +71,14 @@ void display_update(char* display_data) {
 		
 		PORTFSET = 0x10;
 		
-		for(j = 0; j < 128; j++) {
-			spi_send_recv(display_data[i*128 + j]);
+		for(j = 0; j < WIDTH; j++) {
+			spi_send_recv(display_data[i*WIDTH + j]);
 		}
 	}
 }
 
-boundary_check(int position[2], char size[10]){
-	int boundary[2]  = { 128, 32 };
+void boundary_check(int position[2], char size[10]){
+	int boundary[2]  = { WIDTH, HEIGHT };
 	int i;
 	for(i = 0; i < 2; i++){
 		if(position[i] <= 0){
@@ -89,6 +89,18 @@ boundary_check(int position[2], char size[10]){
 		}
 	}
 	
+}
+
+void hit_check(int position[2], char size[10], int bullets[NUMBER_OF_BULLETS][6], int* HP){
+	int i;
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){
+		if(bullets[i][0]){
+			if((bullets[i][1] >= position[0] && bullets[i][1] <= (position[0] + size[0])) && (bullets[i][2] >= position[1] && bullets[i][2] <= (position[1] + size[1]))){
+				*HP -= 1;
+				bullets[i][0] = 0;
+			}
+		}
+	}
 }
 
 
@@ -137,8 +149,8 @@ void create_bullet(int bullets[NUMBER_OF_BULLETS][6], int x_position, int y_posi
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0] == 0){
 			bullets[i][0] = 1;
-			bullets[i][1] = x_position;
-			bullets[i][2] = y_position;
+			bullets[i][1] = x_position + 2 + (x_speed*3);
+			bullets[i][2] = y_position + 2 + (y_speed*3);
 			bullets[i][3] = x_speed;
 			bullets[i][4] = y_speed;
 			bullets[i][5] = 0;
@@ -151,11 +163,11 @@ void bullet_update(int bullets[NUMBER_OF_BULLETS][6]){
 	int i;
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
-			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH){
-				bullets[i][3] = -bullets[i][3];
+			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH - 1){
+				bullets[i][3] = - bullets[i][3];
 			}
-			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT){
-				bullets[i][4] = -bullets[i][4];
+			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT - 1){
+				bullets[i][4] = - bullets[i][4];
 			}
 			bullets[i][1] += bullets[i][3];
 			bullets[i][2] += bullets[i][4];

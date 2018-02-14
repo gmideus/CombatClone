@@ -64,9 +64,9 @@ void model_setup(char model[2][10]){
 	
 }
 
-void bullet_init(int bullets[10][6]){
+void bullet_init(int bullets[NUMBER_OF_BULLETS][6]){
 	int i;
-	for(i = 0; i < 10; i++){
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		bullets[i][0] = 0;
 	}
 }

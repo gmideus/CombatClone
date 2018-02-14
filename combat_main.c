@@ -4,8 +4,6 @@
 #include <pic32mx.h> 
 #include "combat.h"
 
-
-const int BULLET_COOLDOWN = 10;
  
 
 int main(void) {
@@ -36,14 +34,15 @@ int main(void) {
 	
 	/*Variable init*/
 	char* display_data[512];
-	int p_position[2][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
-	char p_model[2][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
-	char p_buttons[2][8];
-	int p_direction[2][2];
-	int b_direction[2][2];
-	int cooldown[2];
+	int p_position[NUMBER_OF_PLAYERS][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
+	char p_model[NUMBER_OF_PLAYERS][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
+	char p_buttons[NUMBER_OF_PLAYERS][8];
+	int p_HP[NUMBER_OF_PLAYERS];
+	int p_direction[NUMBER_OF_PLAYERS][2];
+	int b_direction[NUMBER_OF_PLAYERS][2];
+	int cooldown[NUMBER_OF_PLAYERS];
 	int timer_count = 0;
-	int bullets[10][6];
+	int bullets[NUMBER_OF_BULLETS][6];
 
 	
 	
@@ -53,8 +52,13 @@ int main(void) {
 	display_init();
 	model_setup(p_model);
 	bullet_init(bullets);
-	cooldown[0]=0;
-	cooldown[1]=0;
+	
+	
+	int p;
+	for(p = 0; p < NUMBER_OF_PLAYERS; p++){
+		cooldown[p] = 0;
+		p_HP[p] = MAX_HP;
+	}
 	
 	
 	while( 1 )
@@ -66,8 +70,8 @@ int main(void) {
 			
 			
 			
-			int p;				
-			for(p = 0; p < 2; p++){
+							
+			for(p = 0; p < NUMBER_OF_PLAYERS; p++){
 				
 				if(cooldown[p] > 0){
 					cooldown[p] -= 1;
@@ -104,12 +108,17 @@ int main(void) {
 						create_bullet(bullets, p_position[p][0], p_position[p][1], b_direction[p][0], b_direction[p][1]);
 						cooldown[p] = BULLET_COOLDOWN;
 					}
-				}					
+				}
+									
 				boundary_check(p_position[p], p_model[p]);
+				hit_check(p_position[p], p_model[p], bullets, &p_HP[p]);
+				
 			}
 			bullet_update(bullets);
 			display_data_update(display_data, p_position, p_model, bullets);
 			display_update(display_data);
+			PORTE = (p_HP[0] << 4) | p_HP[1];
+			
 			IFS(0) = 0;
 		}
 	}
