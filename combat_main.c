@@ -2,7 +2,10 @@
 
 #include <stdint.h> 
 #include <pic32mx.h> 
+#include "combat.h"
 
+
+const int BULLET_COOLDOWN = 10;
  
 
 int main(void) {
@@ -36,6 +39,9 @@ int main(void) {
 	int p_position[2][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
 	char p_model[2][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
 	char p_buttons[2][8];
+	int p_direction[2][2];
+	int b_direction[2][2];
+	int cooldown[2];
 	int timer_count = 0;
 	int bullets[10][6];
 
@@ -47,7 +53,8 @@ int main(void) {
 	display_init();
 	model_setup(p_model);
 	bullet_init(bullets);
-	
+	cooldown[0]=0;
+	cooldown[1]=0;
 	
 	
 	while( 1 )
@@ -56,22 +63,47 @@ int main(void) {
 			
 			clear_data(display_data);
 			controller_update(p_buttons);
+			
+			
+			
 			int p;				
 			for(p = 0; p < 2; p++){
+				
+				if(cooldown[p] > 0){
+					cooldown[p] -= 1;
+				}
+				
 				if(!p_buttons[p][7]){
 					p_position[p][0] += 1;
+					p_direction[p][0] = 1;
 				} else if(!p_buttons[p][6]){
 					p_position[p][0] -= 1;
+					p_direction[p][0] = -1;
+				} else {
+					p_direction[p][0] = 0;
 				}
 										
 				if(!p_buttons[p][5]){
 					p_position[p][1] += 1;
+					p_direction[p][1] = 1;
 				}else if(!p_buttons[p][4]){
 					p_position[p][1] -= 1;
+					p_direction[p][1] = -1;
+				} else {
+					p_direction[p][1] = 0;
 				}
 				
+				if(p_direction[p][0]*p_direction[p][0]+p_direction[p][1]*p_direction[p][1]){
+					b_direction[p][0] = p_direction[p][0];
+					b_direction[p][1] = p_direction[p][1];
+				}
+				
+				
 				if(!p_buttons[p][0]){
-					create_bullet(bullets, p_position[p][0], p_position[p][1], 1, 1);
+					if(cooldown[p] <= 0){
+						create_bullet(bullets, p_position[p][0], p_position[p][1], b_direction[p][0], b_direction[p][1]);
+						cooldown[p] = BULLET_COOLDOWN;
+					}
 				}					
 				boundary_check(p_position[p], p_model[p]);
 			}

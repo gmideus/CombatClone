@@ -1,6 +1,7 @@
 
 #include <stdint.h>   
 #include <pic32mx.h>  
+#include "combat.h"
 
 
 void _on_bootstrap() {
@@ -26,7 +27,7 @@ clear_data(char* data){
 	}
 }
 
-display_data_update(char* data, int position[2][2], char model[2][10], int bullets[10][6]){  //, int bullets[10][5]
+display_data_update(char* data, int position[2][2], char model[2][10], int bullets[NUMBER_OF_BULLETS][6]){  //, int bullets[10][5]
 	int p, i, j;
 	for(p = 0; p < 2; p++){
 		for(i = 0; i < model[p][0]; i++){
@@ -38,7 +39,7 @@ display_data_update(char* data, int position[2][2], char model[2][10], int bulle
 			}
 		}
 	}
-	for(i = 0; i < 10; i++){
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
 			int a = (bullets[i][2])/8;
 			data[a*128 + bullets[i][1]] |= (0x1 << bullets[i][2]%8);
@@ -131,9 +132,9 @@ void controller_update(char p_buttons[2][8]){
 	}
 
 
-void create_bullet(int bullets[10][6], int x_position, int y_position, int x_speed, int y_speed){
+void create_bullet(int bullets[NUMBER_OF_BULLETS][6], int x_position, int y_position, int x_speed, int y_speed){
 	int i;
-	for(i = 0; i < 10; i++){
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0] == 0){
 			bullets[i][0] = 1;
 			bullets[i][1] = x_position;
@@ -146,18 +147,25 @@ void create_bullet(int bullets[10][6], int x_position, int y_position, int x_spe
 	}
 }
 	
-void bullet_update(int bullets[10][6]){
+void bullet_update(int bullets[NUMBER_OF_BULLETS][6]){
 	int i;
-	for(i = 0; i < 10; i++){
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
+			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH){
+				bullets[i][3] = -bullets[i][3];
+			}
+			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT){
+				bullets[i][4] = -bullets[i][4];
+			}
 			bullets[i][1] += bullets[i][3];
 			bullets[i][2] += bullets[i][4];
 			bullets[i][5] += 1;
-			if(bullets[i][5] >= 100){
+			if(bullets[i][5] >= BULLET_DURATION){
 				bullets[i][0] = 0;
 			}
+			
+		}
 	}
-}
 	
 }
 

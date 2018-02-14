@@ -1,5 +1,8 @@
 #include <stdint.h>   
-#include <pic32mx.h>  
+#include <pic32mx.h> 
+#include "combat.h"
+
+
 
 void timer_init(){
 	T2CON = 0x70;
@@ -61,9 +64,12 @@ void model_setup(char model[2][10]){
 	
 }
 
-bullet_init(int bullets[10][6]){
+void bullet_init(int bullets[10][6]){
 	int i;
 	for(i = 0; i < 10; i++){
 		bullets[i][0] = 0;
 	}
 }
+
+
+	
