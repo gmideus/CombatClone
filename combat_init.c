@@ -60,6 +60,19 @@ void model_setup(char model[2][10]){
 		model[i][3] = 0xf;
 		model[i][4] = 0xf;
 		model[i][5] = 0x6;
+		/*
+		model[i][2] = 0x04;
+		model[i][3] = 0x06;
+		model[i][4] = 0x1f;
+		model[i][5] = 0x0e;
+		model[i][6] = 0x05;
+		
+		model[i][2] = 0x1e;
+		model[i][3] = 0x1c;
+		model[i][4] = 0x0f;
+		model[i][5] = 0x1c;
+		model[i][6] = 0x1e;
+		*/
 	}
 	
 }

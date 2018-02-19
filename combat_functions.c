@@ -77,15 +77,18 @@ void display_update(char* display_data) {
 	}
 }
 
-void boundary_check(int position[2], char size[10]){
+void boundary_check(int position[2], char size[10], float position_f[2]){
 	int boundary[2]  = { WIDTH, HEIGHT };
 	int i;
 	for(i = 0; i < 2; i++){
-		if(position[i] <= 0){
+		if(position[i] < 0){
 			position[i] = 0;
+			position_f[i] = 0;
+			
 		}
-		if(position[i] >= boundary[i] - size[i]){
+		if(position[i] > boundary[i] - size[i]){
 			position[i] = (boundary[i] - size[i]);
+			position_f[i] = (float) (boundary[i] - size[i]);
 		}
 	}
 	
@@ -180,5 +183,4 @@ void bullet_update(int bullets[NUMBER_OF_BULLETS][6]){
 	}
 	
 }
-
 

@@ -1,10 +1,7 @@
 
-
 #include <stdint.h> 
 #include <pic32mx.h> 
-#include "combat.h"
-
- 
+#include "combat.h" 
 
 int main(void) {
 	SYSKEY = 0xAA996655;  
@@ -43,7 +40,16 @@ int main(void) {
 	int cooldown[NUMBER_OF_PLAYERS];
 	int timer_count = 0;
 	int bullets[NUMBER_OF_BULLETS][6];
-
+	
+	
+	static const float angles[16][2] = {{1, 0}, {0.9238, 0.3826}, {0.7071, 0.7071}, {0.3826, 0.9238}, {0, 1}, {-0.3826, 0.9238}, { -0.7071, 0.7071}, {-0.9238, 0.3826},
+		 {-1, 0}, { -0.9238, -0.3826}, {-0.7071, -0.7071}, { -0.3826, -0.9238}, {0, -1}, {0.3826, -0.9238}, {0.7071, -0.7071}, {0.9238,  -0.3826}};
+	char p_angle[NUMBER_OF_PLAYERS];
+	float p_position_f[NUMBER_OF_PLAYERS][2];
+	float p_direction_f[NUMBER_OF_PLAYERS][2];
+	int turn_cooldown[NUMBER_OF_PLAYERS];
+	
+	float speed = 0.3;
 	
 	
 	/*Display and game setup*/
@@ -52,12 +58,22 @@ int main(void) {
 	display_init();
 	model_setup(p_model);
 	bullet_init(bullets);
+
 	
+	p_angle[0] = 0;
+	p_angle[1] = 0;
+	turn_cooldown[0] = 0;
+	turn_cooldown[1] = 0;
 	
 	int p;
 	for(p = 0; p < NUMBER_OF_PLAYERS; p++){
 		cooldown[p] = 0;
 		p_HP[p] = MAX_HP;
+		p_position_f[p][0] = p*10;
+		p_position_f[p][1] = p*10;
+		p_direction_f[p][0] = angles[0][0];
+		p_direction_f[p][1] = angles[0][1];
+		
 	}
 	
 	
@@ -67,41 +83,63 @@ int main(void) {
 			
 			clear_data(display_data);
 			controller_update(p_buttons);
-			
-			
-			
 							
 			for(p = 0; p < NUMBER_OF_PLAYERS; p++){
 				
 				if(cooldown[p] > 0){
 					cooldown[p] -= 1;
 				}
+				if(turn_cooldown[p] > 0){
+					turn_cooldown[p] -= 1;
+				}
 				
-				if(!p_buttons[p][7]){
-					p_position[p][0] += 1;
-					p_direction[p][0] = 1;
-				} else if(!p_buttons[p][6]){
-					p_position[p][0] -= 1;
-					p_direction[p][0] = -1;
+				if(!p_buttons[p][7] && !turn_cooldown[p]){
+					
+					p_angle[p] = (p_angle[p] + 1)%16 ;
+					p_direction_f[p][0] = angles[p_angle[p]][0];
+					p_direction_f[p][1] = angles[p_angle[p]][1];
+					turn_cooldown[p] = TURN_COOLDOWN;
+				
+					//p_position_f[p][0] += 1;
+				} else if(!p_buttons[p][6] && !turn_cooldown[p]){
+					
+					p_angle[p] -= 1;
+					if(p_angle[p] < 0){
+						p_angle[p] += 16;
+					}
+					p_direction_f[p][0] = angles[p_angle[p]][0];
+					p_direction_f[p][1] = angles[p_angle[p]][1];
+					turn_cooldown[p] = TURN_COOLDOWN;
+					//p_position_f[p][0] -= 1;
 				} else {
 					p_direction[p][0] = 0;
 				}
 										
 				if(!p_buttons[p][5]){
-					p_position[p][1] += 1;
-					p_direction[p][1] = 1;
+					
+					p_position_f[p][0] -= p_direction_f[p][0]*speed;
+					p_position_f[p][1] -= p_direction_f[p][1]*speed;
+					//p_direction[p][1] = 1;
+					
+					//p_position_f[p][1] += 1;
 				}else if(!p_buttons[p][4]){
-					p_position[p][1] -= 1;
-					p_direction[p][1] = -1;
+					
+					p_position_f[p][0] += p_direction_f[p][0]*speed;
+					p_position_f[p][1] += p_direction_f[p][1]*speed;
+					
+					//p_position_f[p][1] -= 1;
 				} else {
 					p_direction[p][1] = 0;
 				}
 				
+				p_position[p][0] = (int) (p_position_f[p][0] + 0.5);
+				p_position[p][1] = (int) (p_position_f[p][1] + 0.5);
+				/*
 				if(p_direction[p][0]*p_direction[p][0]+p_direction[p][1]*p_direction[p][1]){
 					b_direction[p][0] = p_direction[p][0];
 					b_direction[p][1] = p_direction[p][1];
 				}
-				
+				*/
 				
 				if(!p_buttons[p][0]){
 					if(cooldown[p] <= 0){
@@ -110,7 +148,7 @@ int main(void) {
 					}
 				}
 									
-				boundary_check(p_position[p], p_model[p]);
+				boundary_check(p_position[p], p_model[p], p_position_f[p]);
 				hit_check(p_position[p], p_model[p], bullets, &p_HP[p]);
 				
 			}
