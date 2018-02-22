@@ -27,12 +27,12 @@ clear_data(char* data){
 	}
 }
 
-display_data_update(char* data, int position[NUMBER_OF_PLAYERS][2], char model[NUMBER_OF_PLAYERS][10], int bullets[NUMBER_OF_BULLETS][6]){  
+display_data_update(char* data, int position[NUMBER_OF_PLAYERS][2], char model[NUMBER_OF_PLAYERS][10], int bullets[NUMBER_OF_BULLETS][6], char models[8][8]){  
 	int p, i, j;
 	for(p = 0; p < NUMBER_OF_PLAYERS; p++){
 		for(i = 0; i < model[p][0]; i++){
 			for(j = 0; j < model[p][1]; j++){
-				if((model[p][i+2] >> j) & 0x1){
+				if((models[model[p][2]][i] >> j) & 0x1){
 					int a = (position[p][1]+j)/8;
 					data[a*WIDTH + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8);
 				}

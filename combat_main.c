@@ -49,9 +49,8 @@ int main(void) {
 	float p_position_f[NUMBER_OF_PLAYERS][2];
 	float p_direction_f[NUMBER_OF_PLAYERS][2];
 	int turn_cooldown[NUMBER_OF_PLAYERS];
-	
+	static const int p_model_type[NUMBER_OF_PLAYERS][16] = {{0, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7}, {0, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7}};
 	float speed = 0.3;
-	
 	
 	/*Display and game setup*/
 	io_init();
@@ -74,7 +73,7 @@ int main(void) {
 		p_position_f[p][1] = p*10;
 		p_direction_f[p][0] = angles[0][0];
 		p_direction_f[p][1] = angles[0][1];
-		
+		p_model[p][2] = p_model_type[p][p_angle[p]];
 	}
 	
 	
@@ -99,6 +98,7 @@ int main(void) {
 					p_angle[p] = (p_angle[p] + 1)%16 ;
 					p_direction_f[p][0] = angles[p_angle[p]][0];
 					p_direction_f[p][1] = angles[p_angle[p]][1];
+					p_model[p][2] = p_model_type[p][p_angle[p]];
 					turn_cooldown[p] = TURN_COOLDOWN;
 				} else if(!p_buttons[p][6] && !turn_cooldown[p]){
 					
@@ -108,6 +108,7 @@ int main(void) {
 					}
 					p_direction_f[p][0] = angles[p_angle[p]][0];
 					p_direction_f[p][1] = angles[p_angle[p]][1];
+					p_model[p][2] = p_model_type[p][p_angle[p]];
 					turn_cooldown[p] = TURN_COOLDOWN;
 
 				}
@@ -140,7 +141,7 @@ int main(void) {
 				
 			}
 			bullet_update(bullets, bullets_f);
-			display_data_update(display_data, p_position, p_model, bullets);
+			display_data_update(display_data, p_position, p_model, bullets, models);
 			display_update(display_data);
 			PORTE = (p_HP[0] << 4) | p_HP[1];
 			

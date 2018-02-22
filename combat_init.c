@@ -56,24 +56,7 @@ void model_setup(char model[2][10], char models[8][8]){
 	for(i = 0; i < 2; i++){
 		model[i][0] = 5;
 		model[i][1] = 5;
-		/*
-		model[i][2] = 0x6;
-		model[i][3] = 0xf;
-		model[i][4] = 0xf;
-		model[i][5] = 0x6;
-		*/
-		model[i][2] = 0x04;
-		model[i][3] = 0x06;
-		model[i][4] = 0x1f;
-		model[i][5] = 0x0e;
-		model[i][6] = 0x05;
-		/*
-		model[i][2] = 0x1e;
-		model[i][3] = 0x1c;
-		model[i][4] = 0x0f;
-		model[i][5] = 0x1c;
-		model[i][6] = 0x1e;
-		*/
+		model[i][2] = 0;
 	}
 	//Right
 	models[0][0] = 0x1b;
@@ -83,11 +66,11 @@ void model_setup(char model[2][10], char models[8][8]){
 	models[0][4] = 0x04;
 
 	//Right down
-	models[1][0] = 0x04;
-	models[1][1] = 0x0c;
+	models[1][0] = 0x0c;
+	models[1][1] = 0x1c;
 	models[1][2] = 0x1f;
-	models[1][3] = 0x0e;
-	models[1][4] = 0x14;
+	models[1][3] = 0x0f;
+	models[1][4] = 0x16;
 
 	//Down
 	models[2][0] = 0x0f;
@@ -97,11 +80,11 @@ void model_setup(char model[2][10], char models[8][8]){
 	models[2][4] = 0x0f;
 
 	//left down
-	models[3][0] = 0x14;
-	models[3][1] = 0x0e;
+	models[3][0] = 0x16;
+	models[3][1] = 0x0f;
 	models[3][2] = 0x1f;
-	models[3][3] = 0x0c;
-	models[3][4] = 0x04;
+	models[3][3] = 0x1c;
+	models[3][4] = 0x0c;
 
 	//Left
 	models[4][0] = 0x04;
@@ -111,11 +94,11 @@ void model_setup(char model[2][10], char models[8][8]){
 	models[4][4] = 0x1b;
 
 	//up left
-	models[5][0] = 0x05;
-	models[5][1] = 0x0e;
+	models[5][0] = 0x0d;
+	models[5][1] = 0x1e;
 	models[5][2] = 0x1f;
-	models[5][3] = 0x06;
-	models[5][4] = 0x04;
+	models[5][3] = 0x07;
+	models[5][4] = 0x06;
 
 	//Up
 	models[6][0] = 0x1e;
@@ -124,12 +107,12 @@ void model_setup(char model[2][10], char models[8][8]){
 	models[6][3] = 0x1c;
 	models[6][4] = 0x1e;
 
-	//up left
-	models[7][0] = 0x04;
-	models[7][1] = 0x06;
+	//up right
+	models[7][0] = 0x06;
+	models[7][1] = 0x07;
 	models[7][2] = 0x1f;
-	models[7][3] = 0x0e;
-	models[7][4] = 0x05;
+	models[7][3] = 0x1e;
+	models[7][4] = 0x0d;
 
 	
 }
