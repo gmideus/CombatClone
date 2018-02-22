@@ -147,33 +147,38 @@ void controller_update(char p_buttons[2][8]){
 	}
 
 
-void create_bullet(int bullets[NUMBER_OF_BULLETS][6], int x_position, int y_position, int x_speed, int y_speed){
+void create_bullet(int bullets[NUMBER_OF_BULLETS][6], float bullets_f[NUMBER_OF_BULLETS][4], int x_position, int y_position, float* speed){
 	int i;
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0] == 0){
+			bullets_f[i][0] = x_position + 2 + (speed[0]*5);
+			bullets_f[i][1] = y_position + 2 + (speed[1]*5);
+			bullets_f[i][2] = speed[0];
+			bullets_f[i][3] = speed[1];
 			bullets[i][0] = 1;
-			bullets[i][1] = x_position + 2 + (x_speed*3);
-			bullets[i][2] = y_position + 2 + (y_speed*3);
-			bullets[i][3] = x_speed;
-			bullets[i][4] = y_speed;
+			bullets[i][1] = (int) (bullets_f[i][0] + 0.5);
+			bullets[i][2] = (int) (bullets_f[i][1] + 0.5);
 			bullets[i][5] = 0;
 			return;
 		}
 	}
 }
 	
-void bullet_update(int bullets[NUMBER_OF_BULLETS][6]){
+void bullet_update(int bullets[NUMBER_OF_BULLETS][6], float bullets_f[NUMBER_OF_BULLETS][4]){
 	int i;
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
+			
 			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH - 1){
-				bullets[i][3] = - bullets[i][3];
+				bullets_f[i][2] = - bullets_f[i][2];
 			}
 			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT - 1){
-				bullets[i][4] = - bullets[i][4];
+				bullets_f[i][3] = -bullets_f[i][3];
 			}
-			bullets[i][1] += bullets[i][3];
-			bullets[i][2] += bullets[i][4];
+			bullets_f[i][0] += bullets_f[i][2];
+			bullets_f[i][1] += bullets_f[i][3];
+			bullets[i][1] = (int) (bullets_f[i][0] + 0.5);
+			bullets[i][2] = (int) (bullets_f[i][1] + 0.5);
 			bullets[i][5] += 1;
 			if(bullets[i][5] >= BULLET_DURATION){
 				bullets[i][0] = 0;
