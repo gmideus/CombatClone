@@ -26,29 +26,29 @@ clear_data(char* data){
 		data[i] = 0x00;
 	}
 }
-
+// This function updates the display.  
 display_data_update(char* data, int position[NUMBER_OF_PLAYERS][2], char model[NUMBER_OF_PLAYERS][10], int bullets[NUMBER_OF_BULLETS][6], char models[8][8]){  
 	int p, i, j;
-	for(p = 0; p < NUMBER_OF_PLAYERS; p++){
-		for(i = 0; i < model[p][0]; i++){
-			for(j = 0; j < model[p][1]; j++){
+	for(p = 0; p < NUMBER_OF_PLAYERS; p++){ //Display update for each player
+		for(i = 0; i < model[p][0]; i++){ // Size in x
+			for(j = 0; j < model[p][1]; j++){ // Size in y
 				if((models[model[p][2]][i] >> j) & 0x1){
-					int a = (position[p][1]+j)/8;
-					data[a*WIDTH + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8);
+					int a = (position[p][1]+j)/8; // Calculates which row (4 rows, each 8 pixels wide) in which to draw.  
+					data[a*WIDTH + position[p][0] + i] |= (0x1 << (position[p][1]+j)%8); 
 				}
 			}
 		}
 	}
-	for(i = 0; i < NUMBER_OF_BULLETS; i++){
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){ //Display update for bullets 
 		if(bullets[i][0]){
-			int a = (bullets[i][2])/8;
+			int a = (bullets[i][2])/8; //See above drawing method
 			data[a*WIDTH + bullets[i][1]] |= (0x1 << bullets[i][2]%8);
 		}
 	}
 }
 
 
-
+//Copied from Lab. Sends Data to display 
 uint8_t spi_send_recv(uint8_t data) {
 	while(!(SPI2STAT & 0x08));
 	SPI2BUF = data;
@@ -58,6 +58,7 @@ uint8_t spi_send_recv(uint8_t data) {
 
 
 /*Send display data with SPI to the display */
+//Derived from Lab code
 void display_update(char* display_data) {
 	int i, j, k;
 	int c;
@@ -77,6 +78,7 @@ void display_update(char* display_data) {
 	}
 }
 
+// This method prevents players and bullets from moving outside the boundaries of a screen 
 void boundary_check(int position[2], char size[10], float position_f[2]){
 	int boundary[2]  = { WIDTH, HEIGHT };
 	int i;
@@ -94,19 +96,20 @@ void boundary_check(int position[2], char size[10], float position_f[2]){
 	
 }
 
+// This method determines if a player has been shot. 
 void hit_check(int position[2], char size[10], int bullets[NUMBER_OF_BULLETS][6], int* HP){
 	int i;
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
 			if((bullets[i][1] >= position[0] && bullets[i][1] <= (position[0] + size[0])) && (bullets[i][2] >= position[1] && bullets[i][2] <= (position[1] + size[1]))){
-				*HP -= 1;
-				bullets[i][0] = 0;
+				*HP -= 1; //If the bullet is in the same pixel as a player, then the player has been hit and the HP is lowered by one 
+				bullets[i][0] = 0; 
 			}
 		}
 	}
 }
 
-
+ 
 volatile int porte_get(int i){
 	return ((PORTE >> i) & 0x00000001);
 }
