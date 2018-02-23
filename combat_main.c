@@ -3,6 +3,8 @@
 #include <pic32mx.h> 
 #include "combat.h" 
 
+//Test
+
 int main(void) {
 	SYSKEY = 0xAA996655;  
 	SYSKEY = 0x556699AA; 
