@@ -44,6 +44,8 @@ int main(void) {
 	
 	char models[8][8];
 	
+	char* player1_text = " PLAYER 1 WINS";
+	char* player2_text = " PLAYER 2 WINS";
 	
 	static const float angles[16][2] = {{1, 0}, {0.9238, 0.3826}, {0.7071, 0.7071}, {0.3826, 0.9238}, {0, 1}, {-0.3826, 0.9238}, { -0.7071, 0.7071}, {-0.9238, 0.3826},
 		 {-1, 0}, { -0.9238, -0.3826}, {-0.7071, -0.7071}, { -0.3826, -0.9238}, {0, -1}, {0.3826, -0.9238}, {0.7071, -0.7071}, {0.9238,  -0.3826}};
@@ -141,16 +143,16 @@ int main(void) {
 				boundary_check(p_position[p], p_model[p], p_position_f[p]);
 				if(hit_check(p_position[p], p_model[p], bullets, &p_HP[p])){
 					clear_data(display_data);
-					display_data[50] = 0xff;
-					display_data[51] = 0x81;
-					display_data[52] = 0x81;
-					display_data[53] = 0x81;
-					display_data[54] = 0x81;
-					display_data[55] = 0x81;
-					display_data[56] = 0x81;
-					display_data[57] = 0x81;
-					display_data[58] = 0xff;
-					display_update(display_data);
+					char* winner;
+					if(p){
+						winner = player1_text;
+					} else {
+						winner = player2_text;
+					}
+					display_string(0, winner);
+					display_string(2, "     TANKS");
+					display_string(3, "  FOR PLAYING");
+					display_string_update();
 					return 0;
 				}
 				
