@@ -32,7 +32,7 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	/*Variable init*/
-	char* display_data[512];
+	char display_data[512];
 	int p_position[NUMBER_OF_PLAYERS][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
 	char p_model[NUMBER_OF_PLAYERS][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
 	char p_buttons[NUMBER_OF_PLAYERS][8];
@@ -139,7 +139,20 @@ int main(void) {
 				}
 									
 				boundary_check(p_position[p], p_model[p], p_position_f[p]);
-				hit_check(p_position[p], p_model[p], bullets, &p_HP[p]);
+				if(hit_check(p_position[p], p_model[p], bullets, &p_HP[p])){
+					clear_data(display_data);
+					display_data[50] = 0xff;
+					display_data[51] = 0x81;
+					display_data[52] = 0x81;
+					display_data[53] = 0x81;
+					display_data[54] = 0x81;
+					display_data[55] = 0x81;
+					display_data[56] = 0x81;
+					display_data[57] = 0x81;
+					display_data[58] = 0xff;
+					display_update(display_data);
+					return 0;
+				}
 				
 			}
 			bullet_update(bullets, bullets_f);

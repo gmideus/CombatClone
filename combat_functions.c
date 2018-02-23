@@ -94,16 +94,21 @@ void boundary_check(int position[2], char size[10], float position_f[2]){
 	
 }
 
-void hit_check(int position[2], char size[10], int bullets[NUMBER_OF_BULLETS][6], int* HP){
+int hit_check(int position[2], char size[10], int bullets[NUMBER_OF_BULLETS][6], int* HP){
 	int i;
+	int ret = 0;
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
 			if((bullets[i][1] >= position[0] && bullets[i][1] <= (position[0] + size[0])) && (bullets[i][2] >= position[1] && bullets[i][2] <= (position[1] + size[1]))){
 				*HP -= 1;
+				if(*HP <= 0){
+					ret = 1;
+				}
 				bullets[i][0] = 0;
 			}
 		}
 	}
+	return ret;
 }
 
 
