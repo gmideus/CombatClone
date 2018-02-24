@@ -3,6 +3,8 @@
 #include <pic32mx.h> 
 #include "combat.h" 
 
+//Test
+
 int main(void) {
 	SYSKEY = 0xAA996655;  
 	SYSKEY = 0x556699AA; 
@@ -30,7 +32,7 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	/*Variable init*/
-	char* display_data[512];
+	char display_data[512];
 	int p_position[NUMBER_OF_PLAYERS][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
 	char p_model[NUMBER_OF_PLAYERS][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
 	char p_buttons[NUMBER_OF_PLAYERS][8];
@@ -42,6 +44,8 @@ int main(void) {
 	
 	char models[8][8];
 	
+	char* player1_text = " PLAYER 1 WINS";
+	char* player2_text = " PLAYER 2 WINS";
 	
 	static const float angles[16][2] = {{1, 0}, {0.9238, 0.3826}, {0.7071, 0.7071}, {0.3826, 0.9238}, {0, 1}, {-0.3826, 0.9238}, { -0.7071, 0.7071}, {-0.9238, 0.3826},
 		 {-1, 0}, { -0.9238, -0.3826}, {-0.7071, -0.7071}, { -0.3826, -0.9238}, {0, -1}, {0.3826, -0.9238}, {0.7071, -0.7071}, {0.9238,  -0.3826}};
@@ -137,7 +141,20 @@ int main(void) {
 				}
 									
 				boundary_check(p_position[p], p_model[p], p_position_f[p]);
-				hit_check(p_position[p], p_model[p], bullets, &p_HP[p]);
+				if(hit_check(p_position[p], p_model[p], bullets, &p_HP[p])){
+					clear_data(display_data);
+					char* winner;
+					if(p){
+						winner = player1_text;
+					} else {
+						winner = player2_text;
+					}
+					display_string(0, winner);
+					display_string(2, "     TANKS");
+					display_string(3, "  FOR PLAYING");
+					display_string_update();
+					return 0;
+				}
 				
 			}
 			bullet_update(bullets, bullets_f);
