@@ -212,30 +212,31 @@ void display_update(char* display_data) {
 
 // This method prevents players and bullets from moving outside the boundaries of a screen 
 void boundary_check(int position[2], char size[10], float position_f[2]){
-	int boundary[2]  = { WIDTH, HEIGHT };
+	int boundary[2]  = { WIDTH, HEIGHT }; // checks size of model 
 	int i;
 	for(i = 0; i < 2; i++){
 		if(position[i] < 0){
-			position[i] = 0;
-			position_f[i] = 0;
+			position[i] = 0; //position in int 
+			position_f[i] = 0; //position in float 
 			
 		}
-		if(position[i] > boundary[i] - size[i]){
-			position[i] = (boundary[i] - size[i]);
+		if(position[i] > boundary[i] - size[i]){ //if the position is larger than the boundary - model size it would be outside of the screen.  
+			position[i] = (boundary[i] - size[i]); //make the position equal to boundary-size so it remains in bounds
 			position_f[i] = (float) (boundary[i] - size[i]);
 		}
 	}
 	
 }
 
+//This function checks if a player has been shot. 
 int hit_check(int position[2], char size[10], int bullets[NUMBER_OF_BULLETS][6], int* HP){
-	int i;
-	int ret = 0;
+	int i; //index of array NUMBER_OF_BULLETS
+	int ret = 0; //return value that will end the game if it is =1
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
 		if(bullets[i][0]){
 			if((bullets[i][1] >= position[0] && bullets[i][1] <= (position[0] + size[0])) && (bullets[i][2] >= position[1] && bullets[i][2] <= (position[1] + size[1]))){
-				*HP -= 1;
-				if(*HP <= 0){
+				*HP -= 1; //If the position of the bullet and the model match in both the X and Y directions, it is a hit and the HP is lowered by one
+				if(*HP <= 0){ //if HP is zero the player is dead and the game is over (return 1)
 					ret = 1;
 				}
 				bullets[i][0] = 0;
@@ -285,40 +286,41 @@ void controller_update(char p_buttons[2][8]){
 		}
 	}
 
-
+//This function creates bullets that are on the right side of the model (front) and so it does not create the bullet on top of the model (which would be a hit)
 void create_bullet(int bullets[NUMBER_OF_BULLETS][6], float bullets_f[NUMBER_OF_BULLETS][4], int x_position, int y_position, float* speed){
-	int i;
+	int i; //position in array NUMBER_OF_BULLETS
 	for(i = 0; i < NUMBER_OF_BULLETS; i++){
-		if(bullets[i][0] == 0){
-			bullets_f[i][0] = x_position + 2 + (speed[0]*5);
-			bullets_f[i][1] = y_position + 2 + (speed[1]*5);
+		if(bullets[i][0] == 0){ 
+			bullets_f[i][0] = x_position + 2 + (speed[0]*5); //bullet x position so it is in front of the model
+			bullets_f[i][1] = y_position + 2 + (speed[1]*5); //bullet y position --"--
 			bullets_f[i][2] = speed[0];
 			bullets_f[i][3] = speed[1];
 			bullets[i][0] = 1;
-			bullets[i][1] = (int) (bullets_f[i][0] + 0.5);
+			bullets[i][1] = (int) (bullets_f[i][0] + 0.5); //round up/down the value prior to casting into an int
 			bullets[i][2] = (int) (bullets_f[i][1] + 0.5);
 			bullets[i][5] = 0;
 			return;
 		}
 	}
 }
-	
+
+// Updates the position of the bullet on the screen 	
 void bullet_update(int bullets[NUMBER_OF_BULLETS][6], float bullets_f[NUMBER_OF_BULLETS][4]){
-	int i;
-	for(i = 0; i < NUMBER_OF_BULLETS; i++){
-		if(bullets[i][0]){
+	int i; //index in array NUMBER_OF_BULLETS
+	for(i = 0; i < NUMBER_OF_BULLETS; i++){ 
+		if(bullets[i][0]){ //check if a bullet exists
 			
-			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH - 1){
-				bullets_f[i][2] = - bullets_f[i][2];
+			if(bullets[i][1] <= 0 || bullets[i][1] >= WIDTH - 1){ //x position: if its is outside the x boundary then reverse speed
+				bullets_f[i][2] = - bullets_f[i][2]; 
 			}
-			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT - 1){
+			if(bullets[i][2] <= 0 || bullets[i][2] >= HEIGHT - 1){ //y position: if its is outside the y boundary then reverse speed
 				bullets_f[i][3] = -bullets_f[i][3];
 			}
-			bullets_f[i][0] += bullets_f[i][2];
-			bullets_f[i][1] += bullets_f[i][3];
+			bullets_f[i][0] += bullets_f[i][2]; //x speed
+			bullets_f[i][1] += bullets_f[i][3]; //y speed
 			bullets[i][1] = (int) (bullets_f[i][0] + 0.5);
 			bullets[i][2] = (int) (bullets_f[i][1] + 0.5);
-			bullets[i][5] += 1;
+			bullets[i][5] += 1; //current duration of the bullet (how many frames) 
 			if(bullets[i][5] >= BULLET_DURATION){
 				bullets[i][0] = 0;
 			}
@@ -328,6 +330,7 @@ void bullet_update(int bullets[NUMBER_OF_BULLETS][6], float bullets_f[NUMBER_OF_
 	
 }
 
+//Displays text on screen by putting information in a buffer (phase 1)
 void display_string(int line, char *s) {
 	int i;
 	if(line < 0 || line >= 4)
@@ -343,6 +346,7 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
+//Updates text on the display by taking information from the buffer above and pushes it to the screen (phas 2) 
 void display_string_update(void) {
 	int i, j, k;
 	int c;
