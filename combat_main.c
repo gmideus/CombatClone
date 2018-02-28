@@ -85,6 +85,8 @@ int main(void) {
 		p_model[p][2] = p_model_type[p][p_angle[p]];			//sets corresponding sprite
 	}
 	
+	title_screen();
+	
 	
 	while( 1 ) 															//infinite loop 
 	{
