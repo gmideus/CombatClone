@@ -51,14 +51,14 @@ void display_init(void) {
 
 
 /*Creates sprites for both players */
-void model_setup(char model[2][10], char models[8][8]){
+void model_setup(char model[2][10], char models[16][8]){
 	int i;
 	for(i = 0; i < 2; i++){
 		model[i][0] = 5;
 		model[i][1] = 5;
 		model[i][2] = 0;
 	}
-	/*
+	
 	//Tank
 	//Right
 	models[0][0] = 0x1b;
@@ -115,65 +115,65 @@ void model_setup(char model[2][10], char models[8][8]){
 	models[7][2] = 0x1f;
 	models[7][3] = 0x1e;
 	models[7][4] = 0x0d;
-	*/
+	
 //Plane Sprite 
 
 
 	//Right
-	models[0][0] = 0x06;
-	models[0][1] = 0x04;
-	models[0][2] = 0x1f;
-	models[0][3] = 0x0e;
-	models[0][4] = 0x04;
+	models[8][0] = 0x06;
+	models[8][1] = 0x04;
+	models[8][2] = 0x1f;
+	models[8][3] = 0x0e;
+	models[8][4] = 0x04;
 
 	//Right down
-	models[1][0] = 0x05;
-	models[1][1] = 0x0a;
-	models[1][2] = 0x0c;
-	models[1][3] = 0x0f;
-	models[1][4] = 0x10;
+	models[9][0] = 0x09;
+	models[9][1] = 0x0a;
+	models[9][2] = 0x0c;
+	models[9][3] = 0x0f;
+	models[9][4] = 0x10;
 
 	//Down
-	models[2][0] = 0x04;
-	models[2][1] = 0x0c;
-	models[2][2] = 0x1f;
-	models[2][3] = 0x0d;
-	models[2][4] = 0x04;
+	models[10][0] = 0x04;
+	models[10][1] = 0x0c;
+	models[10][2] = 0x1f;
+	models[10][3] = 0x0d;
+	models[10][4] = 0x04;
 
 	//left down
-	models[3][0] = 0x10;
-	models[3][1] = 0x0f;
-	models[3][2] = 0x0c;
-	models[3][3] = 0x0a;
-	models[3][4] = 0x09;
+	models[11][0] = 0x10;
+	models[11][1] = 0x0f;
+	models[11][2] = 0x0c;
+	models[11][3] = 0x0a;
+	models[11][4] = 0x09;
 
 	//Left
-	models[4][0] = 0x04;
-	models[4][1] = 0x0e;
-	models[4][2] = 0x1f;
-	models[4][3] = 0x04;
-	models[4][4] = 0x0c;
+	models[12][0] = 0x04;
+	models[12][1] = 0x0e;
+	models[12][2] = 0x1f;
+	models[12][3] = 0x04;
+	models[12][4] = 0x0c;
 
 	//up left
-	models[5][0] = 0x01;
-	models[5][1] = 0x1e;
-	models[5][2] = 0x06;
-	models[5][3] = 0x0a;
-	models[5][4] = 0x12;
+	models[13][0] = 0x01;
+	models[13][1] = 0x1e;
+	models[13][2] = 0x06;
+	models[13][3] = 0x0a;
+	models[13][4] = 0x12;
 
 	//Up
-	models[6][0] = 0x04;
-	models[6][1] = 0x16;
-	models[6][2] = 0x1f;
-	models[6][3] = 0x06;
-	models[6][4] = 0x04;
+	models[14][0] = 0x04;
+	models[14][1] = 0x16;
+	models[14][2] = 0x1f;
+	models[14][3] = 0x06;
+	models[14][4] = 0x04;
 
 	//up right
-	models[7][0] = 0x12;
-	models[7][1] = 0x0a;
-	models[7][2] = 0x06;
-	models[7][3] = 0x1e;
-	models[7][4] = 0x01;
+	models[15][0] = 0x12;
+	models[15][1] = 0x0a;
+	models[15][2] = 0x06;
+	models[15][3] = 0x1e;
+	models[15][4] = 0x01;
 
 
 	

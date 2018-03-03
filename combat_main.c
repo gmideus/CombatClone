@@ -3,46 +3,39 @@
 #include <pic32mx.h> 
 #include "combat.h" 
 
-//Test
+char display_data[512];
+char* winner;
+char p_buttons[NUMBER_OF_PLAYERS][8]; 						//8 possible buttons
 
-int main(void) {
-	SYSKEY = 0xAA996655;  
-	SYSKEY = 0x556699AA; 
-	while(OSCCON & (1 << 21)); 
-	OSCCONCLR = 0x180000;
-	while(OSCCON & (1 << 21)); 
-	SYSKEY = 0x0; 
-
-	AD1PCFG = 0xFFFF;
-	ODCE = 0x0;
-
-	PORTF = 0xFFFF;
-	PORTG = (1 << 9);
-	ODCF = 0x0;
-	ODCG = 0x0;
-	TRISFCLR = 0x70;
-	TRISGCLR = 0x200;
-
-	SPI2CON = 0;
-	SPI2BRG = 4;
-
-	SPI2STATCLR = 0x40;
-	SPI2CONSET = 0x40;
-	SPI2CONSET = 0x20;
-	SPI2CONSET = 0x8000;
+void end(){
+	display_string(0, winner);
+	display_string(2, "     TANKS");					//super amazing pun 
+	display_string(3, "  FOR PLAYING");
+	display_string_update();
+	while(1){
+		controller_update(!p_buttons);
+		int p;
+		for(p = 0; p < NUMBER_OF_PLAYERS; p++){
+			if(!p_buttons[p][3]){
+				return;
+			}
+			
+		}
+		
+	}
 	
-	/*Variable init*/
-	char display_data[512];
+}
+
+void game(){
 	int p_position[NUMBER_OF_PLAYERS][2] = {{1, 1}, {13, 6}};  	//Player positions [player][coordinate]
-	char p_model[NUMBER_OF_PLAYERS][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model
-	char p_buttons[NUMBER_OF_PLAYERS][8]; 						//8 possible buttons 
+	char p_model[NUMBER_OF_PLAYERS][10];          				//Player model [player][model data]  model data = sizex, sizey, 8 chars representing the model 
 	int p_HP[NUMBER_OF_PLAYERS];								//Health Points for Players which determine if a player is still alive
 	int cooldown[NUMBER_OF_PLAYERS];							//Prevents players from shooting in every single frame. Stores the current cooldown until you can shoot again 
 	int timer_count = 0;					//?
 	int bullets[NUMBER_OF_BULLETS][6];							//keeps track of all int bullet information 
 	float bullets_f[NUMBER_OF_BULLETS][4];						// bullet speed and position in x and y directions as floats 
 	
-	char models[8][8];											//all possible player sprites (to show direction) 
+	char models[8][16];											//all possible player sprites (to show direction) 
 	
 	char* player1_text = " PLAYER 1 WINS"; //Display if this pla
 	char* player2_text = " PLAYER 2 WINS"; //--"--
@@ -57,13 +50,9 @@ int main(void) {
 	int turn_cooldown[NUMBER_OF_PLAYERS];						//prevents player from turning too quickly 
 	
 	//matches the correct sprite model to the angle of the player 
-	static const int p_model_type[NUMBER_OF_PLAYERS][16] = {{0, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7}, {0, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7}};
+	static const int p_model_type[NUMBER_OF_PLAYERS][16] = {{0, 1, 1, 1, 2, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7}, {8, 9, 9, 9, 10, 11, 11, 11, 12, 13, 13, 13, 14, 15, 15, 15}};
 	float speed = 0.3;											//players move at a constant rate 0.3 pixels per frame 
 	
-	/*Display and game setup*/
-	io_init();
-	timer_init();
-	display_init();
 	model_setup(p_model, models);
 	bullet_init(bullets);
 
@@ -84,8 +73,6 @@ int main(void) {
 		p_direction_f[p][1] = angles[0][1];						//y direction 
 		p_model[p][2] = p_model_type[p][p_angle[p]];			//sets corresponding sprite
 	}
-	
-	title_screen();
 	
 	
 	while( 1 ) 															//infinite loop 
@@ -151,17 +138,13 @@ int main(void) {
 				boundary_check(p_position[p], p_model[p], p_position_f[p]); //make sure player is within boundary
 				if(hit_check(p_position[p], p_model[p], bullets, &p_HP[p])){ //if game ending conditions are met the other player wins 
 					clear_data(display_data);
-					char* winner;
+					
 					if(p){
 						winner = player1_text;
 					} else {
 						winner = player2_text;
 					}
-					display_string(0, winner);
-					display_string(2, "     TANKS");					//super amazing pun 
-					display_string(3, "  FOR PLAYING");
-					display_string_update();
-					return 0;
+					return;
 				}
 				
 			}
@@ -173,5 +156,48 @@ int main(void) {
 			IFS(0) = 0;
 		}
 	}
-	return 0;
+	return;
+	
+}
+
+int main(void) {
+	SYSKEY = 0xAA996655;  
+	SYSKEY = 0x556699AA; 
+	while(OSCCON & (1 << 21)); 
+	OSCCONCLR = 0x180000;
+	while(OSCCON & (1 << 21)); 
+	SYSKEY = 0x0; 
+
+	AD1PCFG = 0xFFFF;
+	ODCE = 0x0;
+
+	PORTF = 0xFFFF;
+	PORTG = (1 << 9);
+	ODCF = 0x0;
+	ODCG = 0x0;
+	TRISFCLR = 0x70;
+	TRISGCLR = 0x200;
+
+	SPI2CON = 0;
+	SPI2BRG = 4;
+
+	SPI2STATCLR = 0x40;
+	SPI2CONSET = 0x40;
+	SPI2CONSET = 0x20;
+	SPI2CONSET = 0x8000;
+	
+
+	
+	/*Display and game setup*/
+	io_init();
+	timer_init();
+	display_init();
+	
+	while(1){
+		title_screen();
+		game();
+		end();
+		
+	}
+	
 }
