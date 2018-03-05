@@ -246,6 +246,7 @@ void game(){
 	
 }
 
+/* Main function. Some init code from lab files */
 int main(void) {
 	SYSKEY = 0xAA996655;  
 	SYSKEY = 0x556699AA; 

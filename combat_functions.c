@@ -3,6 +3,8 @@
 #include <pic32mx.h>  
 #include "combat.h"
 
+
+/* Font. Some code from lab files*/
 const uint8_t const font[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -146,7 +148,7 @@ void _nmi_handler() {
 	while(1);
 }
 
-
+/* Code from lab files*/
 void quicksleep(int cyc) {
 	int i;
 	for(i = cyc; i > 0; i--);
@@ -346,7 +348,8 @@ void display_string(int line, char *s) {
 			textbuffer[line][i] = ' ';
 }
 
-//Updates text on the display by taking information from the buffer above and pushes it to the screen (phas 2) 
+/*Updates text on the display by taking information from the buffer above and pushes it to the screen (phas 2) 
+ * Code from lab files */
 void display_string_update(void) {
 	int i, j, k;
 	int c;

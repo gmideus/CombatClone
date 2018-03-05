@@ -10,7 +10,7 @@ void timer_init(){
 	T2CONSET = 0x8000;
 	IFS(0) = 0;
 }
-
+/* setting up intut and output ports */
 void io_init(void){
 	TRISECLR = 0xff;   	//set LEDs as output
 	PORTE = 0x0;
@@ -18,7 +18,7 @@ void io_init(void){
 	TRISDSET = 0x6;		//set input ports for controller data
 
 }
-
+/* Code from lab files */
 void display_init(void) {
     PORTFCLR = 0x10;
 	quicksleep(10);
